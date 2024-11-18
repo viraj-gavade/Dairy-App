@@ -1,0 +1,14 @@
+{
+  "name": "dairy-app",
+  "version": "1.0.0",
+  "description": "A small Dairy Application",
+  "main": "app.js",
+  "scripts": {
+    "test": "npm start"
+  },
+  "author": "Viraj Gavade",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.1"
+  }
+}
