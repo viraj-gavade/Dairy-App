@@ -10,7 +10,7 @@ const DiarySchema = new mongoose.Schema({
         required:true
     },
     createdBy:{
-        type:String,
+        type:mongoose.Schema.Types.ObjectId,
         required:false
     }
 },{
