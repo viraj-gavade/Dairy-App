@@ -76,3 +76,9 @@ const DeleteDairy = asyncHandler(async(req,res)=>{
         )
     )
 })
+
+module.exports = {
+    CreateDairy,
+    DeleteDairy,
+    UpdateDairy
+}

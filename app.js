@@ -6,10 +6,13 @@ const app = express()
 
 
 const connectDB = require('./Database/connect')
+const DairyRouter = require('./Routes/dairy.routers')
 
 app.get('/home',(req,res)=>{
     res.send('<h1>This is the home page</h1>')
 })
+
+app.use('/api/v1',DairyRouter)
 
 const port = process.env.PORT || 3000;
 connectDB(process.env.MONGO_URI).then(() => {
