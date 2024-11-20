@@ -58,3 +58,21 @@ const UpdateDairy = asyncHandler(async(req,res)=>{
         )
     )
 })
+
+const DeleteDairy = asyncHandler(async(req,res)=>{
+    const { id } = req.params
+    const Dairy = await DAIRY.findByIdAndDelete(id)
+    if(!Dairy){
+        throw new CustomApiError(
+            500,
+            'There is no such dairy with id :',id
+        )
+    }
+    
+    return res.status(200).json(
+        new CustomApiResponse(
+            200,
+            'Dairy Deleted Successfully!', 
+        )
+    )
+})
