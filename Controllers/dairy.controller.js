@@ -34,3 +34,27 @@ const CreateDairy = asyncHandler(async(req,res)=>{
     )
 })
 
+
+const UpdateDairy = asyncHandler(async(req,res)=>{
+    const { id } = req.params
+    const { title , body } = req.body
+    const Dairy = await DAIRY.findByIdAndUpdate(id,{
+        title:title ?? Dairy.title,
+        body:body ?? Dairy.body
+    })
+    if(!Dairy){
+        throw new CustomApiError(
+            500,
+            'There is no such dairy with id :',id
+        )
+    }
+    
+    return res.status(200).json(
+        new CustomApiResponse(
+            200,
+            'Dairy Updated Successfully!',
+                Dairy
+            
+        )
+    )
+})
