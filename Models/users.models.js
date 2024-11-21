@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const bcryptjs = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 
 const UserSchema = new  mongoose.Schema({
     username:{
@@ -28,5 +29,19 @@ UserSchema.pre('save',async function (next) {
 UserSchema.methods.isPasswordCorrect = async function (password) {
     return await bcryptjs.compare(password,this.password)
 }
+
+UserSchema.methods.CreateAccessToken = async function (params) {
+    
+    const paylod = {
+        _id:this._id,
+        username:this.username
+    }
+
+    const AccessToken = await jwt.sign(paylod,process.env.ACCESS_TOKEN_SECRETE)
+
+    return AccessToken
+}
+
+
 
 module.exports = mongoose.model('User',UserSchema)
