@@ -16,6 +16,7 @@ app.get('/home',(req,res)=>{
 })
 
 app.use('/api/v1',DairyRouter)
+app.use('/api/v1/user',UserRouter)
 
 const port = process.env.PORT || 3000;
 connectDB(process.env.MONGO_URI).then(() => {

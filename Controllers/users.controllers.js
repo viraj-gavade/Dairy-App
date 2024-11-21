@@ -48,3 +48,10 @@ const SignUpUser = asyncHandler(async(req,res)=>{
         )
       )
 })
+
+
+
+
+module.exports ={
+    SignUpUser
+}
