@@ -4,7 +4,8 @@ const CustomApiError = require('../utils/CustomApiErros')
 const CustomApiResponse = require('../utils/CustomApiResponse')
 
 const CreateDairy = asyncHandler(async(req,res)=>{
-    const { title , body , } = req.body
+    const { title , body  } = req.body
+    console.log(req.body)
     if(!title || ! body ){
         throw new CustomApiError(
             400,
