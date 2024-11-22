@@ -9,7 +9,9 @@ app.use(express.json());
 
 app.use(bodyParser.urlencoded({ extended: false }))
 const connectDB = require('./Database/connect')
+
 const DairyRouter = require('./Routes/dairy.routers')
+const UserRouter = require('./Routes/users.routers')
 
 app.get('/home',(req,res)=>{
     res.send('<h1>This is the home page</h1>')

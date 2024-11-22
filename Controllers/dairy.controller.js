@@ -40,8 +40,8 @@ const UpdateDairy = asyncHandler(async(req,res)=>{
     const { id } = req.params
     const { title , body } = req.body
     const Dairy = await DAIRY.findByIdAndUpdate(id,{
-        title:title ?? Dairy.title,
-        body:body ?? Dairy.body
+        title:title,
+        body:body 
     })
     if(!Dairy){
         throw new CustomApiError(

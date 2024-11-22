@@ -10,3 +10,6 @@ UserRouter.route('/signin').post(SignUpUser)
 UserRouter.route('/signup').post(SignUpUser)
 
 UserRouter.route('/signout').get(SignUpUser)
+
+
+module.exports = UserRouter
