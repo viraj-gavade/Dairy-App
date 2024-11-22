@@ -50,8 +50,43 @@ const SignUpUser = asyncHandler(async(req,res)=>{
 })
 
 
+const SignInUser = asyncHandler(async(req,res)=>{
+  const { email , password , username } = req.body
 
+  const user = await USER.findOne({
+    $or:[{email},{username}]
+  })
+
+  if(!user){
+    throw new CustomApiError(
+      400,
+      'User not found!'
+    )
+  }
+  console.log('Password',password)
+  const isPasswordCorrect = await user.isPasswordCorrect(password)
+  console.log(isPasswordCorrect)
+  if(!isPasswordCorrect){
+    throw new CustomApiError(
+      400,
+      'Incorrect username or password!'
+    )
+  }
+
+  const LoggedUser = await USER.findById(user._id).select('-password')
+
+  const accessToken = await LoggedUser.CreateAccessToken()
+
+  return res.status(200).cookie('accessToken',accessToken).json(
+    new CustomApiResponse(
+      200,
+      'User Logged in successfully!',
+      LoggedUser
+    )
+  )
+})
 
 module.exports ={
-    SignUpUser
+    SignUpUser,
+    SignInUser
 }

@@ -26,11 +26,11 @@ UserSchema.pre('save',async function (next) {
     this.password = await bcryptjs.hash(this.password,salt)
     next() 
 })
-UserSchema.methods.isPasswordCorrect = async function (password) {
+UserSchema.methods.isPasswordCorrect = async function(password){
     return await bcryptjs.compare(password,this.password)
 }
 
-UserSchema.methods.CreateAccessToken = async function (params) {
+UserSchema.methods.CreateAccessToken = async function () {
     
     const paylod = {
         _id:this._id,
