@@ -5,9 +5,10 @@ const jwt = require('jsonwebtoken')
 const USER = require('../Models/users.models')
 const VerifyJwt = asyncHandler(async(req,res,next)=>{
 
-
    try {
-     const token = req.cookies?.accessToken ||  req.header('Authorization')?.replace('Bearer ','')
+    console.log(req.cookies)
+    const token = req.cookies?.accessToken ||  req.header('Authorization')?.replace('Bearer ','')
+    console.log(token)
  
      if(!token){
          throw new CustomApiError(
