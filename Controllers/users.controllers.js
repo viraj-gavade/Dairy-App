@@ -86,7 +86,17 @@ const SignInUser = asyncHandler(async(req,res)=>{
   )
 })
 
+const SignOutUser = asyncHandler(async(req,res)=>{
+  return res.clearCookie('accessToken').json(
+    new CustomApiResponse(
+      200,
+      'User logged out successfully!'
+    )
+  )
+})
+
 module.exports ={
     SignUpUser,
-    SignInUser
+    SignInUser,
+    SignOutUser
 }
