@@ -158,32 +158,46 @@
     .book-info {
       padding: 15px;
     }
+    .book-description {
+  color: #666;
+  font-size: 0.9em;
+  margin-bottom: 15px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex-grow: 1;
+}
+
   }
     </style>
 </head>
 <body>
   <%- include('partials/nav') %>
   <div class="dairy-grid">
-        <% if (dairy && dairy.length > 0) { %>
-          <% dairy.forEach(dairy => { %>
-            <div class="book-card">
-              <div class="book-info">
-                <h3 class="book-title"><%= dairy.title %></h3>
-                   <div class="book-actions">
-                    <button class="borrow-btn">
-                        <a href="/api/v1/dairy/<%= dairy._id %>" target="_blank" download class="borrow-btn">
-                            View
-                          </a>
-                </div>
-              </div>
+    <% if (dairy && dairy.length > 0) { %>
+      <% dairy.forEach(dairy => { %>
+        <div class="book-card">
+          <div class="book-info">
+            <h3 class="book-title"><%= dairy.title %></h3>
+            <p class="book-description"><%= dairy.body.substring(0, 150) %>...</p>
+            <div class="book-actions">
+              <button class="borrow-btn">
+                <a href="/api/v1/dairy/<%= dairy._id %>" target="_blank" class="borrow-btn">
+                  View
+                </a>
+              </button>
             </div>
-          <% }); %>
-        <% } else { %>
-          <div class="no-dairy">
-            <p>No dairy found in the library.</p>
           </div>
-        <% } %>
+        </div>
+      <% }); %>
+    <% } else { %>
+      <div class="no-dairy">
+        <p>No diary found in the library.</p>
       </div>
+    <% } %>
+  </div>
+  
       <%- include('partials/script') %>
 </body>
 </html>

@@ -79,13 +79,12 @@ const DeleteDairy = asyncHandler(async(req,res)=>{
     )
 })
 
-const GetAllUserDairies = asyncHandler(async(req,res)=>{
-    const dairy = await DAIRY.find({
-        createdBy:req.user
-    })
-
-    return res.render('home',{
-        dairy:dairy
+const GetSingleDairy = asyncHandler(async(req,res)=>{
+    const { id } = req.params
+    const diary = await DAIRY.findById(id)
+    console.log(dairy)
+    res.render('singledairy',{
+        diary:diary
     })
 
 
@@ -96,5 +95,6 @@ const GetAllUserDairies = asyncHandler(async(req,res)=>{
 module.exports = {
     CreateDairy,
     DeleteDairy,
-    UpdateDairy
+    UpdateDairy,
+    GetSingleDairy
 }

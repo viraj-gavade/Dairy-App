@@ -18,16 +18,25 @@ const DairyRouter = require('./Routes/dairy.routers')
 const UserRouter = require('./Routes/users.routers');
 const VerifyJwt = require('./Middlewares/auth.middleware');
 
-app.get('/home',VerifyJwt,async (req,res)=>{
-  const dairy = await DAIRY.find({
-    createdBy:req.user
-})
-    console.log(req.user)
-    res.render('home',{
-      user:req.user,
-      dairy:dairy
-    })
-})
+app.get('/home', VerifyJwt, async (req, res) => {
+  try {
+    const dairy = await DAIRY.find({ createdBy: req.user });
+    const previewDairies = dairy.map(d => ({
+      ...d.toObject(),
+      preview: d.body.substring(0, 150) + (d.body.length > 150 ? '...' : ''),
+    }));
+
+    console.log(req.user);
+    res.render('home', {
+      user: req.user,
+      dairy: previewDairies, 
+    });
+  } catch (err) {
+    console.error('Error fetching dairies:', err);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 
 app.use('/api/v1',DairyRouter)
 app.use('/api/v1/user',UserRouter)
