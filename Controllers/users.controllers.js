@@ -40,13 +40,7 @@ const SignUpUser = asyncHandler(async(req,res)=>{
         )
       }
 
-      return res.status(200).json(
-        new CustomApiResponse(
-            200,
-            'User Created Successfully!',
-            FindUser
-        )
-      )
+      return res.status(200).redirect('/api/v1/user/signin')
 })
 
 

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <%- include('partials/head') %>
-  <style>
+    <%- include('partials/head') %>
+    <style>
         /* From Uiverse.io by nathann09 */ 
 .form {
   background: #f1f7fe;
@@ -12,7 +12,7 @@
   border-radius: 0.5rem;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
-
+/* partials */
 .form-title {
   font-size: 1.25rem;
   line-height: 1.75rem;
@@ -99,38 +99,36 @@
   margin-top: 5rem;
 }
     </style>
-    <title>Sign In</title>
+    <title>Sign Up</title>
 </head>
 <body>
-  <%- include('partials/nav') %>
+    <%- include('partials/nav') %>
     
   <div class="container">
-    <form class="form" method="post" action="/api/v1/user/signin">
-       <p class="form-title">Sign in to your account</p>
+    <form class="form" method="post" action="/api/v1/user/signup">
+        <p class="form-title">Create your account</p>
+     
+        <!-- Email Input -->
         <div class="input-container">
-          <input type="email" placeholder="Enter email" name="email">
-          <span></span>
+           <input type="email" placeholder="Enter email" name="email" autocomplete="email" required>
         </div>
+     
+        <!-- Username Input -->
         <div class="input-container">
-          <input type="password" placeholder="Enter password" name="password">
+           <input type="text" placeholder="Create Username" name="username" autocomplete="additional-name" required>
         </div>
-         <button type="submit" class="submit">
-        Sign in
-      </button>
-
-      <!-- Google Sign In Button -->
-      <a href="/auth/google" class="google-btn">
-        <img src="https://img.icons8.com/color/16/000000/google-logo.png" class="google-icon" alt="Google Icon" />
-        Sign in with Google
-      </a>
-
-      <p class="signup-link">
-        No account?
-        <a href="/api/v1/user/signup">Sign up</a>
-      </p>
-   </form>
+     
+        <!-- Password Input -->
+        <div class="input-container">
+           <input type="password" name="password" autocomplete="new-password" placeholder="Create a password" required>
+        </div>
+     
+        <!-- Submit Button -->
+        <button type="submit" class="submit">Sign up</button>
+     </form>
+     
 </div>
 
-<%- include('partials/script') %>
+    <%- include('partials/script') %>
 </body>
 </html>
