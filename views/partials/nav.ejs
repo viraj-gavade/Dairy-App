@@ -207,21 +207,20 @@
 
   <!-- Navbar HTML -->
   <nav class="navbar">
-    <h1>eLibrary</h1>
+    <h1>Dairy-App</h1>
     <ul>
       <li>
         
       </li>
-      <li><a href="/home">Browse</a></li>
       <% if (locals.user) { %>
         <li><a href="/api/v1/library/user/profile"><%= user.username %></a></li>
-        <li><a href="/api/v1/library/user/mybooks">My Books</a></li>
+        <li><a href="/api/v1/library/user/mybooks">My Dairies</a></li>
         <li class="user-actions">
-          <button id="add-book-btn">Add Book</button>
+          <button id="add-book-btn">Add Dairy</button>
         </li>
         <!-- Sign Out Button -->
         <li class="user-actions">
-          <button onclick="window.location.href='/api/v1/library/user/signout'">Sign Out</button>
+          <button onclick="window.location.href='/api/v1/user/signout'">Sign Out</button>
         </li>
       <% } else { %>
         <li class="user-actions">

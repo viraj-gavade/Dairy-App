@@ -77,22 +77,11 @@ const SignInUser = asyncHandler(async(req,res)=>{
 
   const accessToken = await LoggedUser.CreateAccessToken()
 
-  return res.status(200).cookie('accessToken',accessToken).json(
-    new CustomApiResponse(
-      200,
-      'User Logged in successfully!',
-      LoggedUser
-    )
-  )
+  return res.status(200).cookie('accessToken',accessToken).redirect('/home')
 })
 
 const SignOutUser = asyncHandler(async(req,res)=>{
-  return res.clearCookie('accessToken').json(
-    new CustomApiResponse(
-      200,
-      'User logged out successfully!'
-    )
-  )
+  return res.clearCookie('accessToken').redirect('/api/v1/user/signin')
 })
 
 module.exports ={

@@ -3,7 +3,7 @@ require('dotenv').config()
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser')
 const express = require('express')
-
+const path = require('path')
 const app = express()
 
 app.use(cookieParser());
@@ -14,14 +14,21 @@ app.use(bodyParser.urlencoded({ extended: false }))
 const connectDB = require('./Database/connect')
 
 const DairyRouter = require('./Routes/dairy.routers')
-const UserRouter = require('./Routes/users.routers')
+const UserRouter = require('./Routes/users.routers');
+const VerifyJwt = require('./Middlewares/auth.middleware');
 
-app.get('/home',(req,res)=>{
-    res.send('<h1>This is the home page</h1>')
+app.get('/home',VerifyJwt,(req,res)=>{
+    console.log(req.user)
+    res.render('home',{
+      user:req.user
+    })
 })
 
 app.use('/api/v1',DairyRouter)
 app.use('/api/v1/user',UserRouter)
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+console.log('Views directory:', app.get('views'));
 
 const port = process.env.PORT || 3000;
 connectDB(process.env.MONGO_URI).then(() => {
