@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>eLibrary</title>
+  <title>My Diary</title>
   <style>
     /* General Reset */
     * {
@@ -58,23 +58,6 @@
       color: #3498db;
     }
 
-    .navbar .search-box {
-      display: flex;
-      align-items: center;
-      background: #34495e;
-      border-radius: 20px;
-      padding: 5px 15px;
-    }
-
-    .navbar .search-box input {
-      background: none;
-      border: none;
-      color: white;
-      padding: 5px 10px;
-      width: 180px;
-      outline: none;
-    }
-
     .navbar .user-actions button {
       padding: 8px 20px;
       background-color: #3498db;
@@ -103,6 +86,7 @@
       z-index: 1000;
       justify-content: center;
       align-items: center;
+      padding: 20px;
     }
 
     .modal.active {
@@ -113,9 +97,11 @@
       background-color: white;
       padding: 30px;
       border-radius: 8px;
-      width: 90%;
-      max-width: 500px;
+      width: 90%;  /* Increased width */
+      height: 90vh; /* Added height */
       position: relative;
+      display: flex;
+      flex-direction: column;
     }
 
     .modal-header {
@@ -137,12 +123,14 @@
       font-size: 1.5em;
       cursor: pointer;
       color: #666;
+      padding: 5px;
     }
 
     /* Modal Form Styles */
     form {
       display: flex;
       flex-direction: column;
+      flex-grow: 1; /* Allow form to fill available space */
     }
 
     form label {
@@ -151,14 +139,25 @@
       color: #34495e;
     }
 
-    form input,
-    form textarea {
+    form input {
       margin-bottom: 15px;
       padding: 10px;
       border: 1px solid #bdc3c7;
       border-radius: 4px;
       font-size: 1em;
       width: 100%;
+    }
+
+    form textarea {
+      flex-grow: 1; /* Allow textarea to fill available space */
+      margin-bottom: 15px;
+      padding: 15px;
+      border: 1px solid #bdc3c7;
+      border-radius: 4px;
+      font-size: 1.1em;
+      width: 100%;
+      resize: none; /* Remove resize handle since we're using full height */
+      line-height: 1.6;
     }
 
     form button {
@@ -190,35 +189,29 @@
         gap: 15px;
       }
 
-      .navbar .search-box {
-        width: 100%;
-      }
-
-      .navbar .search-box input {
-        width: 100%;
-      }
-
       .modal-content {
         width: 95%;
-        padding: 20px;
+        height: 95vh;
+        padding: 15px;
+      }
+
+      form textarea {
+        font-size: 1em;
+        padding: 10px;
       }
     }
   </style>
 
   <!-- Navbar HTML -->
   <nav class="navbar">
-    <h1>Dairy-App</h1>
+    <h1>Diary-App</h1>
     <ul>
-      <li>
-        
-      </li>
       <% if (locals.user) { %>
         <li><a href="/api/v1/library/user/profile"><%= user.username %></a></li>
-        <li><a href="/api/v1/library/user/mybooks">My Dairies</a></li>
+        <li><a href="/api/v1/library/user/mydiaries">My Entries</a></li>
         <li class="user-actions">
-          <button id="add-book-btn">Add Dairy</button>
+          <button id="add-diary-btn">New Entry</button>
         </li>
-        <!-- Sign Out Button -->
         <li class="user-actions">
           <button onclick="window.location.href='/api/v1/user/signout'">Sign Out</button>
         </li>
@@ -233,44 +226,40 @@
     </ul>
   </nav>
 
-  <!-- Modal for Adding Book -->
-  <div class="modal" id="addBookModal">
+  <!-- Modal for Adding Diary Entry -->
+  <div class="modal" id="addDiaryModal">
     <div class="modal-content">
       <div class="modal-header">
-        <span class="modal-title">Add a New Book</span>
+        <span class="modal-title">Add New Diary Entry</span>
         <button class="close-modal">&times;</button>
       </div>
-      <form id="addBookForm">
-        <label for="bookTitle">Title:</label>
-        <input type="text" id="bookTitle" name="title" required><br>
-        <label for="bookAuthor">Author:</label>
-        <input type="text" id="bookAuthor" name="author" required><br>
-        <label for="bookYear">Year of Publication:</label>
-        <input type="number" id="bookYear" name="publishedInYear" required><br>
-        <label for="bookCover">Cover Image:</label>
-        <input type="file" id="bookCover" name="CoverImage" accept="image/*" required><br>
-        <label for="bookCover">Book Pdf:</label>
-        <input type="file" id="bookCover" name="pdfLink" accept="application/pdf" required><br>
-        <button type="submit">Add Book</button>
+      <form id="addDiaryForm">
+        <label for="diaryTitle">Title:</label>
+        <input type="text" id="diaryTitle" name="title" placeholder="Enter title for your diary entry" required>
+        
+        <label for="diaryBody">Write your thoughts...</label>
+        <textarea id="diaryBody" name="body" placeholder="Dear Diary..." required></textarea>
+        
+        <button type="submit">Save Entry</button>
       </form>
     </div>
   </div>
 
   <script>
-    const modal = document.getElementById('addBookModal');
-    const addBookBtn = document.getElementById('add-book-btn');
+    const modal = document.getElementById('addDiaryModal');
+    const addDiaryBtn = document.getElementById('add-diary-btn');
     const closeBtn = document.querySelector('.close-modal');
-    const addBookForm = document.getElementById('addBookForm');
+    const addDiaryForm = document.getElementById('addDiaryForm');
 
     // Open modal
-    addBookBtn.addEventListener('click', () => {
+    addDiaryBtn.addEventListener('click', () => {
       modal.classList.add('active');
     });
 
     // Close modal function
     const closeModal = () => {
       modal.classList.remove('active');
-      addBookForm.reset();
+      addDiaryForm.reset();
     };
 
     closeBtn.addEventListener('click', closeModal);
@@ -281,41 +270,38 @@
       }
     });
 
-    addBookForm.addEventListener('submit', async (e) => {
+    addDiaryForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      const formData = new FormData(addBookForm);
+      const formData = new FormData(addDiaryForm);
+      const entry = {
+        title: formData.get('title'),
+        body: formData.get('body')
+      };
 
       try {
-        const response = await fetch('/api/v1/library/books', {
+        const response = await fetch('/api/v1/library/diaries', {
           method: 'POST',
-          body: formData
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(entry)
         });
 
         const data = await response.json();
 
         if (response.ok) {
-          alert('Book added successfully!');
+          alert('Diary entry added successfully!');
           closeModal();
           window.location.reload();
         } else {
-          alert(data.message || 'Error adding book');
+          alert(data.message || 'Error adding diary entry');
         }
       } catch (error) {
         console.error('Error:', error);
-        alert('Error adding book');
+        alert('Error adding diary entry');
       }
     });
-    function searchBooks(query) {
-  fetch(`/api/v1/books/?search=${encodeURIComponent(query)}`)
-    .then(response => response.json())
-    .then(data => {
-      // Process the data and display the search results
-      console.log(data); // or update the UI with the data
-    })
-    .catch(error => console.error('Error:', error));
-}
-
   </script>
 </body>
 
