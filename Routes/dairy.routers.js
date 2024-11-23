@@ -5,8 +5,8 @@ const VerifyJwt = require('../Middlewares/auth.middleware')
 const DairyRouter = express.Router()
 
 
-DairyRouter.route('/dairy').post(CreateDairy)
-DairyRouter.route('/dairy/:id').delete(VerifyJwt,DeleteDairy).patch(UpdateDairy)
+DairyRouter.route('/dairy').post(VerifyJwt,CreateDairy)
+DairyRouter.route('/dairy/:id').delete(VerifyJwt,DeleteDairy).patch(VerifyJwt,UpdateDairy)
 
 
 

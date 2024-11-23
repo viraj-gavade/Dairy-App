@@ -15,7 +15,8 @@ const CreateDairy = asyncHandler(async(req,res)=>{
 
     const Dairy = await DAIRY.create({
         title:title,
-        body:body
+        body:body,
+        createdBy:req.user
     })
 
     const CreatedDairy = await DAIRY.findById(Dairy._id)
@@ -77,6 +78,20 @@ const DeleteDairy = asyncHandler(async(req,res)=>{
         )
     )
 })
+
+const GetAllUserDairies = asyncHandler(async(req,res)=>{
+    const dairy = await DAIRY.find({
+        createdBy:req.user
+    })
+
+    return res.render('home',{
+        dairy:dairy
+    })
+
+
+})
+
+
 
 module.exports = {
     CreateDairy,

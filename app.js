@@ -1,5 +1,6 @@
 require('dotenv').config()
 
+const DAIRY = require('./Models/dairy.models')
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser')
 const express = require('express')
@@ -17,10 +18,14 @@ const DairyRouter = require('./Routes/dairy.routers')
 const UserRouter = require('./Routes/users.routers');
 const VerifyJwt = require('./Middlewares/auth.middleware');
 
-app.get('/home',VerifyJwt,(req,res)=>{
+app.get('/home',VerifyJwt,async (req,res)=>{
+  const dairy = await DAIRY.find({
+    createdBy:req.user
+})
     console.log(req.user)
     res.render('home',{
-      user:req.user
+      user:req.user,
+      dairy:dairy
     })
 })
 
