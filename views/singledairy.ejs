@@ -168,7 +168,9 @@
       padding: 30px;
       border-radius: 8px;
       width: 90%;
-      height: 90vh;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow-y: auto;
       position: relative;
       display: flex;
       flex-direction: column;
@@ -200,20 +202,63 @@
       display: flex;
       flex-direction: column;
       flex-grow: 1;
+      gap: 15px;
     }
 
     form input, form textarea {
-      margin-bottom: 15px;
       padding: 15px;
       border: 1px solid #bdc3c7;
       border-radius: 4px;
       font-size: 1.1em;
+      width: 100%;
     }
 
     form textarea {
       flex-grow: 1;
-      resize: none;
+      min-height: 300px;
+      resize: vertical;
       line-height: 1.6;
+    }
+
+    form button[type="submit"] {
+      padding: 12px 25px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1.1em;
+      transition: background-color 0.3s ease;
+    }
+
+    form button[type="submit"]:hover {
+      background-color: #2980b9;
+    }
+
+    .error-message {
+      color: #e74c3c;
+      padding: 10px;
+      border-radius: 4px;
+      background-color: #fadbd8;
+      margin-top: 10px;
+      display: none;
+    }
+
+    /* Loading Spinner */
+    .spinner {
+      display: none;
+      width: 40px;
+      height: 40px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #3498db;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
 
     /* Responsive Adjustments */
@@ -252,6 +297,11 @@
       .diary-content {
         font-size: 1.1em;
       }
+
+      .modal-content {
+        width: 95%;
+        padding: 20px;
+      }
     }
   </style>
 </head>
@@ -259,7 +309,6 @@
 <body>
   <!-- Navbar -->
   <%- include('partials/nav') %>
-
 
   <!-- Diary Entry Content -->
   <div class="diary-container">
@@ -278,8 +327,8 @@
         </div>
       </div>
       <div class="diary-actions">
-        <button class="edit-btn" onclick="openEditModal()">Edit Entry</button>
-        <button class="delete-btn" onclick="deleteDiary()">Delete Entry</button>
+        <button class="edit-btn" id="openEditBtn">Edit Entry</button>
+        <button class="delete-btn" id="deleteBtn">Delete Entry</button>
       </div>
     </div>
     
@@ -293,85 +342,141 @@
     <div class="modal-content">
       <div class="modal-header">
         <span class="modal-title">Edit Diary Entry</span>
-        <button class="close-modal" onclick="closeEditModal()">&times;</button>
+        <button class="close-modal" id="closeModalBtn">&times;</button>
       </div>
       <form id="editDiaryForm">
-        <input type="text" id="editTitle" name="title" value="<%= diary.title %>" required>
-        <textarea id="editBody" name="body" required><%= diary.body %></textarea>
+        <input type="text" id="editTitle" name="title" value="<%= diary.title %>" required placeholder="Enter title">
+        <textarea id="editBody" name="body" required placeholder="Write your entry here..."><%= diary.body %></textarea>
+        <div class="error-message" id="errorMessage"></div>
+        <div class="spinner" id="spinner"></div>
         <button type="submit">Save Changes</button>
       </form>
     </div>
   </div>
 
   <script>
-    const modal = document.getElementById('editDiaryModal');
-    const editForm = document.getElementById('editDiaryForm');
-
-    function openEditModal() {
-      modal.classList.add('active');
-    }
-
-    function closeEditModal() {
-      modal.classList.remove('active');
-    }
-
-    // Close modal when clicking outside
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) {
-        closeEditModal();
-      }
-    });
-
-    // Handle edit form submission
-    editForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const formData = {
-        title: document.getElementById('editTitle').value,
-        body: document.getElementById('editBody').value
+    // Wait for DOM to be fully loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      // DOM Elements
+      const elements = {
+        modal: document.getElementById('editDiaryModal'),
+        editForm: document.getElementById('editDiaryForm'),
+        errorMessage: document.getElementById('errorMessage'),
+        spinner: document.getElementById('spinner'),
+        openEditBtn: document.getElementById('openEditBtn'),
+        closeModalBtn: document.getElementById('closeModalBtn'),
+        deleteBtn: document.getElementById('deleteBtn'),
+        editTitle: document.getElementById('editTitle'),
+        editBody: document.getElementById('editBody')
       };
 
-      try {
-        const response = await fetch('/api/v1/dairy/<%= diary._id %>', {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(formData)
-        });
-
-        if (response.ok) {
-          window.location.reload();
-        } else {
-          const data = await response.json();
-          alert(data.message || 'Error updating diary entry');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        alert('Error updating diary entry');
+      // Functions
+      function openEditModal() {
+        console.log('Opening modal...');
+        elements.modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
       }
-    });
 
-    // Handle delete
-    async function deleteDiary() {
-      if (confirm('Are you sure you want to delete this diary entry? This action cannot be undone.')) {
+      function closeEditModal() {
+        console.log('Closing modal...');
+        elements.modal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+        elements.errorMessage.style.display = 'none';
+        elements.errorMessage.textContent = '';
+      }
+
+      function showError(message) {
+        elements.errorMessage.textContent = message;
+        elements.errorMessage.style.display = 'block';
+        elements.spinner.style.display = 'none';
+      }
+
+      // Event Listeners
+      elements.openEditBtn.addEventListener('click', openEditModal);
+      elements.closeModalBtn.addEventListener('click', closeEditModal);
+      
+      // Close modal when clicking outside
+      elements.modal.addEventListener('click', (e) => {
+        if (e.target === elements.modal) {
+          closeEditModal();
+        }
+      });
+
+      // Handle edit form submission
+      elements.editForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        console.log('Form submitted');
+
+        elements.errorMessage.style.display = 'none';
+        elements.spinner.style.display = 'block';
+
+        const formData = {
+          title: elements.editTitle.value.trim(),
+          body: elements.editBody.value.trim()
+        };
+
+        if (!formData.title || !formData.body) {
+          showError('Title and body are required');
+          return;
+        }
+
+        try {
+          const response = await fetch('/api/v1/diary/<%= diary._id %>', {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            window.location.reload();
+          } else {
+            showError(data.message || 'Error updating diary entry');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          showError('Network error occurred. Please try again.');
+        } finally {
+          elements.spinner.style.display = 'none';
+        }
+      });
+
+      // Handle delete
+      elements.deleteBtn.addEventListener('click', async () => {
+        if (!confirm('Are you sure you want to delete this diary entry? This action cannot be undone.')) {
+          return;
+        }
+
         try {
           const response = await fetch('/api/v1/diary/<%= diary._id %>', {
             method: 'DELETE'
           });
 
           if (response.ok) {
-            window.location.href = '/api/v1/library/user/mydiaries';
+            window.location.href = '/home';
           } else {
             const data = await response.json();
             alert(data.message || 'Error deleting diary entry');
           }
         } catch (error) {
           console.error('Error:', error);
-          alert('Error deleting diary entry');
+          alert('Network error occurred. Please try again.');
         }
-      }
-    }
+      });
+
+      // Handle escape key to close modal
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && elements.modal.classList.contains('active')) {
+          closeEditModal();
+        }
+      });
+
+      // Log initial state
+      console.log('Page loaded, components initialized');
+    });
   </script>
 </body>
 

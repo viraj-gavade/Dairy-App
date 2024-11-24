@@ -6,11 +6,11 @@ const bodyParser = require('body-parser')
 const express = require('express')
 const path = require('path')
 const app = express()
-
+const cors = require('cors')
 app.use(cookieParser());
 
 app.use(express.json());
-
+app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }))
 const connectDB = require('./Database/connect')
 

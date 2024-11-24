@@ -182,11 +182,11 @@
             <h3 class="book-title"><%= dairy.title %></h3>
             <p class="book-description"><%= dairy.body.substring(0, 150) %>...</p>
             <div class="book-actions">
+              <a href="/api/v1/diary/<%= dairy._id %>" class="borrow-btn">
               <button class="borrow-btn">
-                <a href="/api/v1/dairy/<%= dairy._id %>" target="_blank" class="borrow-btn">
                   View
+                </button>
                 </a>
-              </button>
             </div>
           </div>
         </div>
