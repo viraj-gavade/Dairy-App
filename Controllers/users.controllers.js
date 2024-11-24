@@ -78,9 +78,24 @@ const SignOutUser = asyncHandler(async(req,res)=>{
   return res.clearCookie('accessToken').redirect('/api/v1/user/signin')
 })
 
+const getuserprofile = asyncHandler(async(req,res)=>{
+  const userId = req.user._id
+
+  if(!userId){
+      throw new CustomApiError(
+          401,
+          'There is no such user with this id'
+      )
+  }
+  const user = await USER.findById(userId)
+  return res.status(200).render('Profile',{
+      user:user
+  })
+})
 
 module.exports ={
     SignUpUser,
     SignInUser,
-    SignOutUser
+    SignOutUser,
+    getuserprofile
 }

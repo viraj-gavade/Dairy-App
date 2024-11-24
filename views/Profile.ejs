@@ -89,13 +89,9 @@
     <%- include('partials/nav') %>
     <div class="container">
         <div class="profile-card">
-            <div class="profile-image">
-                <img src="<%= user.profileImg %>" alt="Profile Image">
-            </div>
             <div class="profile-info">
                 <h2 class="username"><%= user.username %></h2>
-                <p class="bio"><%- user.bio %></p>
-                <a href="/api/v1/library/user/edit-profile" class="edit-button">Edit Profile</a>
+                <p class="bio"><%- user.email %></p>
             </div>
         </div>
     </div>

@@ -1,5 +1,6 @@
 const express = require('express')
-const { SignUpUser,SignInUser,SignOutUser } = require('../Controllers/users.controllers')
+const { SignUpUser,SignInUser,SignOutUser,getuserprofile } = require('../Controllers/users.controllers')
+const VerifyJwt = require('../Middlewares/auth.middleware')
 
 
 const UserRouter = express.Router()
@@ -14,6 +15,8 @@ UserRouter.route('/signin').get((req,res)=>{
    }).post(SignInUser)
 
 UserRouter.route('/signout').get(SignOutUser)
+
+UserRouter.route('/profile').get(VerifyJwt,getuserprofile)
 
 
 module.exports = UserRouter
