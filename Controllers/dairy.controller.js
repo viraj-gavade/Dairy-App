@@ -2,6 +2,8 @@ const DAIRY = require('../Models/dairy.models')
 const asyncHandler = require('../utils/AsyncHandler')
 const CustomApiError = require('../utils/CustomApiErros')
 const CustomApiResponse = require('../utils/CustomApiResponse')
+const User = require('../Models/users.models')
+const mongoose = require('mongoose')
 
 const CreateDairy = asyncHandler(async(req,res)=>{
     const { title , body  } = req.body
@@ -91,11 +93,38 @@ const GetSingleDairy = asyncHandler(async(req,res)=>{
 
 })
 
+const MyDiaries = asyncHandler(async(req,res)=>{
+    console.log(req.user)
+    const diary = await User.aggregate([
+        {
+            $match:{
+                _id: new mongoose.Types.ObjectId(req.user._id)
+            }
+        },
+        {
+            $lookup:{
+                from:"dairies",
+                localField:'_id',
+                foreignField:'createdBy',
+                as:"MyDairies",
+            },
+            
+        },
+       
+    ])
 
+    console.log(diary)
+
+    return res.status(200).render('',{
+        diary:diary,
+        user:req.user
+    })
+})
 
 module.exports = {
     CreateDairy,
     DeleteDairy,
     UpdateDairy,
-    GetSingleDairy
+    GetSingleDairy,
+    MyDiaries
 }

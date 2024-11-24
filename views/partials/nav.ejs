@@ -204,11 +204,10 @@
 
   <!-- Navbar HTML -->
   <nav class="navbar">
-    <h1>Diary-App</h1>
+    <h1><a href="/home"></a>Diary-App</h1>
     <ul>
       <% if (locals.user) { %>
         <li><a href="/api/v1/library/user/profile"><%= user.username %></a></li>
-        <li><a href="/api/v1/library/user/mydiaries">My Entries</a></li>
         <li class="user-actions">
           <button id="add-diary-btn">New Entry</button>
         </li>

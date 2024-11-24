@@ -78,6 +78,7 @@ const SignOutUser = asyncHandler(async(req,res)=>{
   return res.clearCookie('accessToken').redirect('/api/v1/user/signin')
 })
 
+
 module.exports ={
     SignUpUser,
     SignInUser,
