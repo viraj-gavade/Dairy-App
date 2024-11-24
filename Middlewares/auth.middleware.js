@@ -11,10 +11,7 @@ const VerifyJwt = asyncHandler(async(req,res,next)=>{
     console.log(token)
  
      if(!token){
-         throw new CustomApiError(
-             401,
-             'Unauthorized Request!'
-         )
+       return res.redirect('/api/v1/user/signup')
      }
  
      const  decodedToken = jwt.verify(token,process.env.ACCESS_TOKEN_SECRETE)

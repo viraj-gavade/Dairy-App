@@ -82,9 +82,10 @@ const DeleteDairy = asyncHandler(async(req,res)=>{
 const GetSingleDairy = asyncHandler(async(req,res)=>{
     const { id } = req.params
     const diary = await DAIRY.findById(id)
-    console.log(dairy)
+    console.log(diary)
     res.render('singledairy',{
-        diary:diary
+        diary:diary,
+        user:req.user
     })
 
 

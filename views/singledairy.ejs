@@ -258,18 +258,8 @@
 
 <body>
   <!-- Navbar -->
-  <nav class="navbar">
-    <h1>Diary-App</h1>
-    <ul>
-      <% if (locals.user) { %>
-        <li><a href="/api/v1/library/user/profile"><%= user.username %></a></li>
-        <li><a href="/api/v1/library/user/mydiaries">My Entries</a></li>
-        <li class="user-actions">
-          <button onclick="window.location.href='/api/v1/user/signout'">Sign Out</button>
-        </li>
-      <% } %>
-    </ul>
-  </nav>
+  <%- include('partials/nav') %>
+
 
   <!-- Diary Entry Content -->
   <div class="diary-container">

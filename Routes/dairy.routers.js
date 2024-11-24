@@ -6,7 +6,7 @@ const DairyRouter = express.Router()
 
 
 DairyRouter.route('/dairy').post(VerifyJwt,CreateDairy)
-DairyRouter.route('/dairy/:id').get(GetSingleDairy).delete(VerifyJwt,DeleteDairy).patch(VerifyJwt,UpdateDairy)
+DairyRouter.route('/dairy/:id').get(VerifyJwt,GetSingleDairy).delete(VerifyJwt,DeleteDairy).patch(VerifyJwt,UpdateDairy)
 
 
 
