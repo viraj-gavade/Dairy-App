@@ -8,15 +8,34 @@ const path = require('path')
 const app = express()
 const cors = require('cors')
 app.use(cookieParser());
+const session = require('express-session')
+const passport = require('passport')
+
 
 app.use(express.json());
 app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }))
 const connectDB = require('./Database/connect')
 
+const VerifyJwt = require('./Middlewares/auth.middleware');
+
+
+app.use(session({
+  secret: process.env.SECRETE,
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false }
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 const DairyRouter = require('./Routes/dairy.routers')
 const UserRouter = require('./Routes/users.routers');
-const VerifyJwt = require('./Middlewares/auth.middleware');
+const OauthRouter = require('./Routes/Oauth2.routers')
+
+app.use('/', OauthRouter);                  // OAuth authentication endpoints
+
 
 app.get('/home', VerifyJwt, async (req, res) => {
   try {
