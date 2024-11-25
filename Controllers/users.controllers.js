@@ -1,101 +1,141 @@
-const USER = require('../Models/users.models')
-const asyncHandler = require('../utils/AsyncHandler')
-const CustomApiError = require('../utils/CustomApiErros')
-const CustomApiResponse = require('../utils/CustomApiResponse')
+// Import required modules
+const USER = require('../Models/users.models');
 
+// Import utility modules
+const asyncHandler = require('../utils/AsyncHandler');
+const CustomApiError = require('../utils/CustomApiErros');
+const CustomApiResponse = require('../utils/CustomApiResponse');
 
+/**
+ * User SignUp Controller
+ * @route POST /api/v1/user/signup
+ * @access Public
+ */
+const SignUpUser = asyncHandler(async (req, res) => {
+    // Destructure user registration details
+    const { email, password, username } = req.body;
 
-const SignUpUser = asyncHandler(async(req,res)=>{
-    const { email , password , username } = req.body
-    console.log(req.body)
-    const emailCheck = await USER.findOne({
-        email:email
-      })
-      if(emailCheck){
+    // Check if email already exists
+    const emailCheck = await USER.findOne({ email });
+    if (emailCheck) {
         throw new CustomApiError(
             400,
-            'User with this email already exists! '
-        )
-      }
-      const usernameCheck = await USER.findOne({
-        username:username
-      })
-      if(usernameCheck){
+            'User with this email already exists!'
+        );
+    }
+
+    // Check if username already exists
+    const usernameCheck = await USER.findOne({ username });
+    if (usernameCheck) {
         throw new CustomApiError(
             400,
-            'User with this username already exists! '
-        )
-      }
-      const CreateUser = await USER.create({
-        username:username,
-        email:email,
+            'User with this username already exists!'
+        );
+    }
+
+    // Create new user
+    const CreateUser = await USER.create({
+        username,
+        email,
         password
-      })
+    });
 
-      const FindUser = await USER.findById(CreateUser._id).select('-password')
-      if(!FindUser){
+    // Verify user creation and exclude password
+    const FindUser = await USER.findById(CreateUser._id).select('-password');
+    if (!FindUser) {
         throw new CustomApiError(
-            400,
+            500, // Changed to 500 for server error
             'Something went wrong while creating the user'
-        )
-      }
+        );
+    }
 
-      return res.status(200).redirect('/api/v1/user/signin')
-})
+    // Redirect to signin page
+    return res.status(200).redirect('/api/v1/user/signin');
+});
 
+/**
+ * User SignIn Controller
+ * @route POST /api/v1/user/signin
+ * @access Public
+ */
+const SignInUser = asyncHandler(async (req, res) => {
+    // Destructure login credentials
+    const { email, password, username } = req.body;
 
-const SignInUser = asyncHandler(async(req,res)=>{
-  const { email , password , username } = req.body
+    // Find user by email or username
+    const user = await USER.findOne({
+        $or: [{ email }, { username }]
+    });
 
-  const user = await USER.findOne({
-    $or:[{email},{username}]
-  })
+    // Validate user existence
+    if (!user) {
+        throw new CustomApiError(
+            404, // Changed to 404 for not found
+            'User not found!'
+        );
+    }
 
-  if(!user){
-    throw new CustomApiError(
-      400,
-      'User not found!'
-    )
-  }
-  console.log('Password',password)
-  const isPasswordCorrect = await user.isPasswordCorrect(password)
-  console.log(isPasswordCorrect)
-  if(!isPasswordCorrect){
-    throw new CustomApiError(
-      400,
-      'Incorrect username or password!'
-    )
-  }
+    // Verify password
+    const isPasswordCorrect = await user.isPasswordCorrect(password);
+    if (!isPasswordCorrect) {
+        throw new CustomApiError(
+            401, // Changed to 401 for unauthorized
+            'Incorrect username or password!'
+        );
+    }
 
-  const LoggedUser = await USER.findById(user._id).select('-password')
+    // Find logged-in user and generate access token
+    const LoggedUser = await USER.findById(user._id).select('-password');
+    const accessToken = await LoggedUser.CreateAccessToken();
 
-  const accessToken = await LoggedUser.CreateAccessToken()
+    // Set access token in cookie and redirect to home
+    return res.status(200)
+        .cookie('accessToken', accessToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production'
+        })
+        .redirect('/home');
+});
 
-  return res.status(200).cookie('accessToken',accessToken).redirect('/home')
-})
+/**
+ * User SignOut Controller
+ * @route GET /api/v1/user/signout
+ * @access Private
+ */
+const SignOutUser = asyncHandler(async (req, res) => {
+    // Clear access token cookie and redirect to signin
+    return res.clearCookie('accessToken').redirect('/api/v1/user/signin');
+});
 
-const SignOutUser = asyncHandler(async(req,res)=>{
-  return res.clearCookie('accessToken').redirect('/api/v1/user/signin')
-})
+/**
+ * Get User Profile Controller
+ * @route GET /api/v1/user/profile
+ * @access Private
+ */
+const getuserprofile = asyncHandler(async (req, res) => {
+    // Extract user ID from authenticated request
+    const userId = req.user._id;
 
-const getuserprofile = asyncHandler(async(req,res)=>{
-  const userId = req.user._id
+    // Validate user ID
+    if (!userId) {
+        throw new CustomApiError(
+            401,
+            'Unauthorized: Invalid user ID'
+        );
+    }
 
-  if(!userId){
-      throw new CustomApiError(
-          401,
-          'There is no such user with this id'
-      )
-  }
-  const user = await USER.findById(userId)
-  return res.status(200).render('Profile',{
-      user:user
-  })
-})
+    // Fetch user profile
+    const user = await USER.findById(userId);
 
-module.exports ={
+    // Render profile view
+    return res.status(200).render('Profile', {
+        user: user
+    });
+});
+
+module.exports = {
     SignUpUser,
     SignInUser,
     SignOutUser,
     getuserprofile
-}
+};
