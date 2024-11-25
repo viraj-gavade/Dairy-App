@@ -10,10 +10,9 @@ const OauthRouter = express.Router();
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const session = require('express-session');
-const BOOK = require('../Models/book.models');
-const USER = require('../Models/user.models');
+const DAIRY = require('../Models/dairy.models');
+const USER = require('../Models/users.models');
 const JWT = require('jsonwebtoken')
-const Book = require('../Models/book.models')
 
 /**
  * @description Configure Google OAuth Strategy
@@ -79,7 +78,7 @@ OauthRouter.get('/auth/google/callback',async (req, res, next) => {
     // Extract user information from Google profile
     const fullName = req.user.displayName;
     const Useremail = req.user._json.email;
-    const ProfileImage = req.user._json.picture
+    // const ProfileImage = req.user._json.picture
 
     console.log(`Name: ${fullName}`);
     console.log(`Email: ${Useremail}`);
@@ -94,7 +93,6 @@ OauthRouter.get('/auth/google/callback',async (req, res, next) => {
         username:fullName,
         password:"Auth2-Login",
         email:Useremail,
-        profileImg:ProfileImage
     })
      console.log(user)
      const paylod = {
@@ -105,11 +103,7 @@ OauthRouter.get('/auth/google/callback',async (req, res, next) => {
   const accessToken = JWT.sign(paylod,process.env.ACCESS_TOKEN_SECRETE,{
       expiresIn:process.env.ACCESS_TOKEN_EXPIRY
   })
-  const refreshToken = JWT.sign(paylod,process.env.REFRESH_TOKEN_SECRETE,{
-      expiresIn:process.env.REFRESH_TOKEN_EXPIRY
-  })
-   
-     return res.cookie('accessToken', accessToken).cookie('refreshToken',refreshToken).redirect('/home');
+        return res.cookie('accessToken', accessToken).redirect('/home');
     
     }
     
@@ -121,11 +115,9 @@ OauthRouter.get('/auth/google/callback',async (req, res, next) => {
   const accessToken = JWT.sign(paylod,process.env.ACCESS_TOKEN_SECRETE,{
     expiresIn:process.env.ACCESS_TOKEN_EXPIRY
 })
-const refreshToken = JWT.sign(paylod,process.env.REFRESH_TOKEN_SECRETE,{
-    expiresIn:process.env.REFRESH_TOKEN_EXPIRY
-})
+
   
-    return res.cookie('accessToken', accessToken).cookie('refreshToken',refreshToken).redirect('/home');
+    return res.cookie('accessToken', accessToken).redirect('/home');
   }
 );
 
