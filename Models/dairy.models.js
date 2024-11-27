@@ -16,7 +16,7 @@ const DiarySchema = new mongoose.Schema({
         type: String,
         required: [true, 'Diary content is required'],
         trim: true,
-        minlength: [10, 'Diary content must be at least 10 characters long']
+       
     },
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
