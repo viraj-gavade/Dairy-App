@@ -71,9 +71,19 @@ app.get('/home', VerifyJwt, async (req, res) => {
   }
 });
 
+
+
+//Router to navigate to the homepage 
+app.get('/',(req,res)=>{
+  res.redirect('/home')
+})
+
 // API routes
 app.use('/api/v1', DairyRouter);
 app.use('/api/v1/user', UserRouter);
+
+
+
 
 // Server and database connection
 const port = process.env.PORT || 3000;
